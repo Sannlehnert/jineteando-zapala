@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+// Componente raíz. No contiene lógica de negocio.
 </script>
 
 <template>
-  <HelloWorld />
+  <router-view />
 </template>
