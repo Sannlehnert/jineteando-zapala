@@ -22,7 +22,7 @@ export interface Producto {
   categoria_id: string
   imagen_principal_url: string | null
   activo: boolean
-  atributos?: AtributosProducto | null    // NUEVO
+  atributos?: AtributosProducto | null
   created_at: string
   updated_at: string
 }
@@ -42,10 +42,9 @@ export interface ProductoFormData {
   categoria_id: string
   imagen_principal_url: string | null
   activo: boolean
-  atributos?: AtributosProducto | null    // NUEVO
+  atributos?: AtributosProducto | null
 }
 
-// NUEVOS TIPOS
 export interface ImagenProducto {
   id: string
   producto_id: string
@@ -59,4 +58,29 @@ export interface AtributosProducto {
   talles?: string[]
   colores?: string[]
   materiales?: string[]
+}
+
+export interface Configuracion {
+  id: number
+  nombre: string
+  descripcion: string | null
+  logo_url: string | null
+  whatsapp: string
+  direccion: string
+  horarios: string
+  instagram: string | null
+  facebook: string | null
+  tiktok: string | null
+  updated_at: string
+}
+
+export interface ConfiguracionFormData {
+  nombre: string
+  descripcion?: string
+  whatsapp: string
+  direccion: string
+  horarios: string
+  instagram?: string
+  facebook?: string
+  tiktok?: string
 }

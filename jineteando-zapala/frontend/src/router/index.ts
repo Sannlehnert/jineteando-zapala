@@ -64,6 +64,16 @@ const rutas: RouteRecordRaw[] = [
     name: 'admin-productos-editar',
     component: () => import('../modules/admin/views/ProductoFormView.vue'),
   },
+  {
+    path: '/buscar',
+    name: 'busqueda',
+    component: () => import('../modules/catalogo/views/BusquedaView.vue'),
+  },
+  {
+    path: '/admin/configuracion',
+    name: 'admin-configuracion',
+    component: () => import('../modules/admin/views/ConfiguracionView.vue'),
+  },
 ]
 
 const router = createRouter({

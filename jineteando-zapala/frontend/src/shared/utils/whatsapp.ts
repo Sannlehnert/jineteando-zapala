@@ -1,8 +1,9 @@
-const WHATSAPP_NUMBER = '+5493413107891'
+const WHATSAPP_DEFAULT = '+5493413107891'
 
-export function generarUrlWhatsApp(mensaje: string) {
+export function generarUrlWhatsApp(mensaje: string, numero?: string) {
+  const phone = numero || WHATSAPP_DEFAULT
   const encoded = encodeURIComponent(mensaje)
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`
+  return `https://wa.me/${phone}?text=${encoded}`
 }
 
 export function mensajeProducto(nombre: string, codigo: string) {

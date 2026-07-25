@@ -47,7 +47,6 @@ export const productoSchema = z.object({
 
 export type ProductoForm = z.infer<typeof productoSchema>
 
-// NUEVO esquema para atributos
 export const atributosSchema = z.object({
   talles: z.array(z.string().min(1)).optional(),
   colores: z.array(z.string().min(1)).optional(),
@@ -55,3 +54,16 @@ export const atributosSchema = z.object({
 })
 
 export type AtributosForm = z.infer<typeof atributosSchema>
+
+export const configuracionSchema = z.object({
+  nombre: z.string().min(1, 'El nombre es obligatorio'),
+  descripcion: z.string().optional().default(''),
+  whatsapp: z.string().min(1, 'El WhatsApp es obligatorio'),
+  direccion: z.string().min(1, 'La dirección es obligatoria'),
+  horarios: z.string().min(1, 'Los horarios son obligatorios'),
+  instagram: z.string().optional().default(''),
+  facebook: z.string().optional().default(''),
+  tiktok: z.string().optional().default(''),
+})
+
+export type ConfiguracionForm = z.infer<typeof configuracionSchema>
