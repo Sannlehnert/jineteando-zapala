@@ -36,3 +36,14 @@ export async function actualizarCategoria(id: string, data: Partial<CategoriaFor
 export async function cambiarEstadoCategoria(id: string, activa: boolean) {
   return actualizarCategoria(id, { activa })
 }
+
+export async function obtenerCategoriaPorSlug(slug: string) {
+  const { data, error } = await clienteSupabase
+    .from('categorias')
+    .select('*')
+    .eq('slug', slug)
+    .eq('activa', true)
+    .single()
+  if (error) throw new Error(`Categoría no encontrada: ${error.message}`)
+  return data as Categoria
+}

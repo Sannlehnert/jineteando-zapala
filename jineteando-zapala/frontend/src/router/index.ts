@@ -3,21 +3,11 @@ import { useAuthStore } from '../stores/auth'
 
 const rutas: RouteRecordRaw[] = [
   // --- Rutas públicas ---
-  {
-    path: '/',
-    name: 'inicio',
-    component: () => import('../modules/catalogo/views/InicioView.vue'),
-  },
-  {
-    path: '/catalogo',
-    name: 'catalogo',
-    component: () => import('../modules/catalogo/views/CatalogoView.vue'),
-  },
-  {
-    path: '/contacto',
-    name: 'contacto',
-    component: () => import('../modules/catalogo/views/ContactoView.vue'),
-  },
+  { path: '/', name: 'inicio', component: () => import('../modules/catalogo/views/InicioView.vue') },
+  { path: '/catalogo', name: 'catalogo', component: () => import('../modules/catalogo/views/CatalogoView.vue') },
+  { path: '/catalogo/:categoriaSlug', name: 'categoria', component: () => import('../modules/catalogo/views/CategoriaPublicaView.vue') },
+  { path: '/producto/:productoSlug', name: 'producto-detalle', component: () => import('../modules/catalogo/views/ProductoDetalleView.vue') },
+  { path: '/contacto', name: 'contacto', component: () => import('../modules/catalogo/views/ContactoView.vue') },
   // --- Rutas administrativas ---
   {
     path: '/admin/login',
