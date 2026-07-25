@@ -1,9 +1,48 @@
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
 import { useProductoPublico } from '../composables/useProductoPublico'
+import { obtenerImagenesProducto } from '../../../infrastructure/imagenes'
 import NavegacionPublica from '../components/NavegacionPublica.vue'
 import { generarUrlWhatsApp, mensajeProducto } from '../../../shared/utils/whatsapp'
+import type { ImagenProducto, AtributosProducto } from '../../../domain/types'
 
 const { producto, cargando, error } = useProductoPublico()
+const imagenes = ref<ImagenProducto[]>([])
+const cargandoImagenes = ref(false)
+const imagenPrincipal = ref<string | null>(null)
+
+watch(producto, async (prod) => {
+  if (prod) {
+    cargandoImagenes.value = true
+    try {
+      imagenes.value = await obtenerImagenesProducto(prod.id)
+    } catch (e) {
+      imagenes.value = []
+    } finally {
+      cargandoImagenes.value = false
+    }
+  } else {
+    imagenes.value = []
+  }
+}, { immediate: true })
+
+watch(imagenes, (newImgs) => {
+  if (newImgs.length > 0) {
+    imagenPrincipal.value = newImgs[0].url
+  } else {
+    imagenPrincipal.value = null
+  }
+}, { immediate: true })
+
+const atributos = computed<AtributosProducto | null>(() => {
+  if (!producto.value?.atributos) return null
+  const attr = producto.value.atributos as any
+  return {
+    talles: attr.talles || undefined,
+    colores: attr.colores || undefined,
+    materiales: attr.materiales || undefined,
+  }
+})
 </script>
 
 <template>
@@ -26,14 +65,27 @@ const { producto, cargando, error } = useProductoPublico()
 
       <template v-else-if="producto">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div class="bg-gray-100 flex items-center justify-center h-80 md:h-96">
-            <img
-              v-if="producto.imagen_principal_url"
-              :src="producto.imagen_principal_url"
-              :alt="producto.nombre"
-              class="w-full h-full object-contain"
-            />
-            <span v-else class="text-gray-400">Sin imagen disponible</span>
+          <!-- Galería de imágenes -->
+          <div>
+            <div v-if="imagenes.length" class="space-y-4">
+              <div class="bg-gray-100 flex items-center justify-center h-80 md:h-96">
+                <img :src="imagenPrincipal || imagenes[0].url" :alt="producto.nombre" class="w-full h-full object-contain" />
+              </div>
+              <div v-if="imagenes.length > 1" class="flex gap-2 overflow-x-auto">
+                <button
+                  v-for="img in imagenes"
+                  :key="img.id"
+                  @click="imagenPrincipal = img.url"
+                  class="flex-shrink-0 w-16 h-16 border-2"
+                  :class="img.url === imagenPrincipal ? 'border-amber-800' : 'border-gray-200'"
+                >
+                  <img :src="img.url" class="w-full h-full object-cover" />
+                </button>
+              </div>
+            </div>
+            <div v-else class="bg-gray-100 flex items-center justify-center h-64 text-gray-400">
+              Sin imagen disponible
+            </div>
           </div>
           
           <div>
@@ -44,6 +96,22 @@ const { producto, cargando, error } = useProductoPublico()
               <span class="font-medium">Precio mayorista:</span> ${{ producto.precio_mayorista.toLocaleString() }}
             </p>
             
+            <!-- Atributos -->
+            <div v-if="atributos" class="space-y-3 mb-6">
+              <div v-if="atributos.talles?.length">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Talles disponibles</h3>
+                <p class="text-gray-800">{{ atributos.talles.join(' · ') }}</p>
+              </div>
+              <div v-if="atributos.colores?.length">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Colores</h3>
+                <p class="text-gray-800">{{ atributos.colores.join(' · ') }}</p>
+              </div>
+              <div v-if="atributos.materiales?.length">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Materiales</h3>
+                <p class="text-gray-800">{{ atributos.materiales.join(' · ') }}</p>
+              </div>
+            </div>
+
             <p class="text-gray-700 mb-8">{{ producto.descripcion }}</p>
 
             <a

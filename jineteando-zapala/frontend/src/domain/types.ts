@@ -6,7 +6,7 @@ export interface Categoria {
   slug: string
   imagen_url: string | null
   activa: boolean
-  padre_id: string | null   // nuevo
+  padre_id: string | null
   created_at: string
   updated_at: string
 }
@@ -22,6 +22,7 @@ export interface Producto {
   categoria_id: string
   imagen_principal_url: string | null
   activo: boolean
+  atributos?: AtributosProducto | null    // NUEVO
   created_at: string
   updated_at: string
 }
@@ -29,7 +30,7 @@ export interface Producto {
 export interface CategoriaFormData {
   nombre: string
   activa: boolean
-  padre_id?: string | null   // nuevo, opcional
+  padre_id?: string | null
 }
 
 export interface ProductoFormData {
@@ -41,4 +42,21 @@ export interface ProductoFormData {
   categoria_id: string
   imagen_principal_url: string | null
   activo: boolean
+  atributos?: AtributosProducto | null    // NUEVO
+}
+
+// NUEVOS TIPOS
+export interface ImagenProducto {
+  id: string
+  producto_id: string
+  url: string
+  path_storage: string
+  orden: number
+  created_at: string
+}
+
+export interface AtributosProducto {
+  talles?: string[]
+  colores?: string[]
+  materiales?: string[]
 }

@@ -16,7 +16,7 @@ export const categoriaSchema = z.object({
     .min(1, 'El nombre es obligatorio')
     .max(100, 'El nombre no puede superar los 100 caracteres'),
   activa: z.boolean().default(true),
-  padre_id: z.string().uuid().nullable().optional().default(null), // nuevo
+  padre_id: z.string().uuid().nullable().optional().default(null),
 })
 
 export type CategoriaForm = z.infer<typeof categoriaSchema>
@@ -46,3 +46,12 @@ export const productoSchema = z.object({
 })
 
 export type ProductoForm = z.infer<typeof productoSchema>
+
+// NUEVO esquema para atributos
+export const atributosSchema = z.object({
+  talles: z.array(z.string().min(1)).optional(),
+  colores: z.array(z.string().min(1)).optional(),
+  materiales: z.array(z.string().min(1)).optional(),
+})
+
+export type AtributosForm = z.infer<typeof atributosSchema>

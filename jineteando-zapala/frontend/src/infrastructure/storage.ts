@@ -1,7 +1,6 @@
 import { clienteSupabase } from './supabase'
 
 const BUCKET_NAME = 'productos'
-
 const MIME_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp']
 const TAMANO_MAXIMO = 5 * 1024 * 1024 // 5 MB
 
@@ -15,8 +14,8 @@ export function validarImagen(file: File): string | null {
   return null
 }
 
-export async function subirImagenProducto(file: File): Promise<string> {
-  const nombreArchivo = `${Date.now()}-${file.name}`
+export async function subirImagenProducto(file: File, ruta?: string): Promise<string> {
+  const nombreArchivo = ruta || `${Date.now()}-${file.name}`
   const { error } = await clienteSupabase.storage
     .from(BUCKET_NAME)
     .upload(nombreArchivo, file, {

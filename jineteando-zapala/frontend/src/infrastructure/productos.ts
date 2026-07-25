@@ -8,7 +8,7 @@ export async function obtenerProductos(admin: boolean = false) {
   }
   const { data, error } = await query.order('nombre')
   if (error) throw new Error(`Error al obtener productos: ${error.message}`)
-  return data as (Producto & { categoria: { nombre: string } } | null)[]
+  return data as (Producto & { categoria: { nombre: string } })[]
 }
 
 export async function obtenerProductoPorId(id: string) {
@@ -21,12 +21,24 @@ export async function obtenerProductoPorId(id: string) {
   return data as Producto
 }
 
+export async function obtenerProductosActivosPorCategoria(categoriaId: string) {
+  const { data, error } = await clienteSupabase
+    .from('productos')
+    .select('*')
+    .eq('categoria_id', categoriaId)
+    .eq('activo', true)
+    .order('nombre')
+  if (error) throw new Error(`Error al obtener productos: ${error.message}`)
+  return data as Producto[]
+}
+
 export async function crearProducto(data: ProductoFormData) {
-  // Se envía todo, la DB se encarga de generar código si es necesario (en el trigger)
-  // Pero aquí ya viene el código del frontend (auto-generado o manual), respetamos el campo.
   const { data: creado, error } = await clienteSupabase
     .from('productos')
-    .insert(data)
+    .insert({
+      ...data,
+      atributos: data.atributos ?? {},   // NUEVO
+    })
     .select()
     .single()
   if (error) throw new Error(`Error al crear producto: ${error.message}`)
@@ -34,9 +46,13 @@ export async function crearProducto(data: ProductoFormData) {
 }
 
 export async function actualizarProducto(id: string, data: Partial<ProductoFormData>) {
+  const payload: any = { ...data }
+  if (data.atributos !== undefined) {
+    payload.atributos = data.atributos
+  }
   const { data: actualizado, error } = await clienteSupabase
     .from('productos')
-    .update(data)
+    .update(payload)
     .eq('id', id)
     .select()
     .single()
@@ -49,6 +65,7 @@ export async function cambiarEstadoProducto(id: string, activo: boolean) {
 }
 
 export async function obtenerProductoPorSlug(slug: string) {
+  // Primero obtenemos el producto con ese slug y activo = true
   const { data, error } = await clienteSupabase
     .from('productos')
     .select('*')
@@ -56,23 +73,14 @@ export async function obtenerProductoPorSlug(slug: string) {
     .eq('activo', true)
     .single()
   if (error) throw new Error(`Producto no encontrado: ${error.message}`)
-  // Verificar que la categoría esté activa (RLS lo hace, pero por claridad)
+  
+  // Verificar que la categoría esté activa (RLS lo hace, pero por seguridad)
   const { data: categoria } = await clienteSupabase
     .from('categorias')
     .select('activa')
     .eq('id', data.categoria_id)
     .single()
   if (!categoria || !categoria.activa) throw new Error('Producto no disponible')
+  
   return data as Producto
-}
-
-export async function obtenerProductosActivosPorCategoria(categoriaId: string) {
-  const { data, error } = await clienteSupabase
-    .from('productos')
-    .select('*')
-    .eq('categoria_id', categoriaId)
-    .eq('activo', true)
-    .order('nombre')
-  if (error) throw new Error(`Error al obtener productos: ${error.message}`)
-  return data as Producto[]
 }
