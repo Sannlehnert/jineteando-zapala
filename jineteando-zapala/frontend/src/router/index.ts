@@ -29,6 +29,26 @@ const rutas: RouteRecordRaw[] = [
     name: 'panel-admin',
     component: () => import('../modules/admin/views/PanelAdminView.vue'),
   },
+  {
+    path: '/admin/categorias',
+    name: 'admin-categorias',
+    component: () => import('../modules/admin/views/CategoriasAdminView.vue'),
+  },
+  {
+    path: '/admin/productos',
+    name: 'admin-productos',
+    component: () => import('../modules/admin/views/ProductosAdminView.vue'),
+  },
+  {
+    path: '/admin/productos/nuevo',
+    name: 'admin-productos-nuevo',
+    component: () => import('../modules/admin/views/ProductoFormView.vue'),
+  },
+  {
+    path: '/admin/productos/:id/editar',
+    name: 'admin-productos-editar',
+    component: () => import('../modules/admin/views/ProductoFormView.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -36,18 +56,16 @@ const router = createRouter({
   routes: rutas,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
 
   const isAdminRoute = to.path.startsWith('/admin')
   const isLoginRoute = to.path === '/admin/login'
 
-  // Si ya está autenticado como admin y va al login, redirigir al panel
   if (isLoginRoute && authStore.esAdmin()) {
     return next('/admin')
   }
 
-  // Cualquier ruta de admin que no sea login requiere autenticación y rol admin
   if (isAdminRoute && !isLoginRoute) {
     if (!authStore.user) return next('/admin/login')
     if (!authStore.esAdmin()) return next('/')

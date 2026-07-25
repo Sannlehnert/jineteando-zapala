@@ -22,30 +22,26 @@ async function cerrarSesion() {
 
     <main class="max-w-7xl mx-auto px-6 py-12 space-y-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <router-link
-          to="/"
-          class="bg-white border border-gray-200 p-6 hover:bg-gray-50 transition-colors"
-        >
+        <router-link to="/" class="bg-white border border-gray-200 p-6 hover:bg-gray-50 transition-colors">
           <h2 class="text-lg font-medium mb-1">Ver catálogo público</h2>
           <p class="text-sm text-gray-500">Cómo ven los visitantes tu negocio</p>
         </router-link>
 
-        <div class="bg-white border border-gray-200 p-6 opacity-60 cursor-not-allowed select-none">
+        <router-link to="/admin/productos"
+          class="bg-white border border-gray-200 p-6 hover:bg-gray-50 transition-colors">
           <h2 class="text-lg font-medium mb-1">Gestionar productos</h2>
-          <p class="text-sm text-gray-500">Próximamente</p>
-        </div>
+          <p class="text-sm text-gray-500">Administrá todos los productos</p>
+        </router-link>
 
-        <div class="bg-white border border-gray-200 p-6 opacity-60 cursor-not-allowed select-none">
+        <router-link to="/admin/categorias"
+          class="bg-white border border-gray-200 p-6 hover:bg-gray-50 transition-colors">
           <h2 class="text-lg font-medium mb-1">Gestionar categorías</h2>
-          <p class="text-sm text-gray-500">Próximamente</p>
-        </div>
+          <p class="text-sm text-gray-500">Organizá las categorías</p>
+        </router-link>
       </div>
 
       <div class="pt-4">
-        <button
-          @click="cerrarSesion"
-          class="text-sm text-red-700 hover:text-red-900 underline underline-offset-2"
-        >
+        <button @click="cerrarSesion" class="text-sm text-red-700 hover:text-red-900 underline underline-offset-2">
           Cerrar sesión
         </button>
       </div>
