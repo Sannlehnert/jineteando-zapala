@@ -1,12 +1,13 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { obtenerCategoriaPorSlug } from '../../../infrastructure/categorias'
+import { obtenerCategoriaPorSlug, obtenerSubcategorias } from '../../../infrastructure/categorias'
 import { obtenerProductosActivosPorCategoria } from '../../../infrastructure/productos'
 import type { Categoria, Producto } from '../../../domain/types'
 
 export function useCategoriaPublica() {
   const route = useRoute()
   const categoria = ref<Categoria | null>(null)
+  const subcategorias = ref<Categoria[]>([])
   const productos = ref<Producto[]>([])
   const cargando = ref(false)
   const error = ref<string | null>(null)
@@ -17,12 +18,24 @@ export function useCategoriaPublica() {
     cargando.value = true
     error.value = null
     categoria.value = null
+    subcategorias.value = []
     productos.value = []
     try {
       const cat = await obtenerCategoriaPorSlug(slugValue)
       categoria.value = cat
-      const prods = await obtenerProductosActivosPorCategoria(cat.id)
-      productos.value = prods
+      if (cat.padre_id) {
+        // Si es subcategoría, cargar productos directamente
+        productos.value = await obtenerProductosActivosPorCategoria(cat.id)
+      } else {
+        // Si es categoría principal, buscar subcategorías activas
+        const subs = await obtenerSubcategorias(cat.id, false)
+        if (subs.length > 0) {
+          subcategorias.value = subs
+        } else {
+          // Si no tiene subcategorías, cargar productos directamente
+          productos.value = await obtenerProductosActivosPorCategoria(cat.id)
+        }
+      }
     } catch (e: any) {
       error.value = e.message
     } finally {
@@ -30,15 +43,13 @@ export function useCategoriaPublica() {
     }
   }
 
-  // Cargar al montar y cuando cambia el slug
   watch(slug, (newSlug) => {
     cargarDatos(newSlug)
   }, { immediate: true })
 
-  // También si la ruta cambia (por si se navega entre categorías)
   watch(() => route.params.categoriaSlug, (newSlug) => {
     if (newSlug) slug.value = newSlug as string
   })
 
-  return { categoria, productos, cargando, error }
+  return { categoria, subcategorias, productos, cargando, error }
 }

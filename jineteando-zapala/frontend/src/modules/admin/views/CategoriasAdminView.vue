@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useCategoriasAdmin } from '../composables/useCategorias'
 import type { Categoria, CategoriaFormData } from '../../../domain/types'
 import { categoriaSchema } from '../../../domain/schemas'
@@ -8,10 +8,14 @@ const { categorias, cargando, error, cargarCategorias, crear, actualizar, cambia
 
 const mostrarFormulario = ref(false)
 const editandoId = ref<string | null>(null)
-const formulario = ref<CategoriaFormData>({ nombre: '', activa: true })
-const erroresValidacion = ref<{ nombre?: string }>({})
+const formulario = ref<CategoriaFormData>({ nombre: '', activa: true, padre_id: null })
+const erroresValidacion = ref<Record<string, string>>({})
 const guardando = ref(false)
 const errorFormulario = ref<string | null>(null)
+
+const categoriasPrincipales = computed(() =>
+  categorias.value.filter(c => c.padre_id === null && c.id !== editandoId.value)
+)
 
 onMounted(() => {
   cargarCategorias()
@@ -19,7 +23,7 @@ onMounted(() => {
 
 const abrirFormularioCrear = () => {
   editandoId.value = null
-  formulario.value = { nombre: '', activa: true }
+  formulario.value = { nombre: '', activa: true, padre_id: null }
   erroresValidacion.value = {}
   errorFormulario.value = null
   mostrarFormulario.value = true
@@ -27,7 +31,11 @@ const abrirFormularioCrear = () => {
 
 const abrirFormularioEditar = (categoria: Categoria) => {
   editandoId.value = categoria.id
-  formulario.value = { nombre: categoria.nombre, activa: categoria.activa }
+  formulario.value = {
+    nombre: categoria.nombre,
+    activa: categoria.activa,
+    padre_id: categoria.padre_id,
+  }
   erroresValidacion.value = {}
   errorFormulario.value = null
   mostrarFormulario.value = true
@@ -40,10 +48,16 @@ const cerrarFormulario = () => {
 const guardarCategoria = async () => {
   erroresValidacion.value = {}
   errorFormulario.value = null
+
   const resultado = categoriaSchema.safeParse(formulario.value)
   if (!resultado.success) {
     const fieldErrors = resultado.error.flatten().fieldErrors
-    erroresValidacion.value.nombre = fieldErrors.nombre?.[0]
+    for (const key of Object.keys(fieldErrors) as Array<keyof typeof fieldErrors>) {
+      const messages = fieldErrors[key]
+      if (messages && messages.length > 0) {
+        erroresValidacion.value[key] = messages[0]
+      }
+    }
     return
   }
 
@@ -103,7 +117,9 @@ const alternarEstado = async (categoria: Categoria) => {
             class="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0"
           >
             <div>
-              <span class="font-medium">{{ cat.nombre }}</span>
+              <span :class="{ 'pl-4': cat.padre_id }" class="font-medium">
+                {{ cat.padre_id ? '↳ ' : '' }}{{ cat.nombre }}
+              </span>
               <span :class="cat.activa ? 'text-green-700' : 'text-red-600'" class="ml-2 text-sm">
                 {{ cat.activa ? 'Activa' : 'Inactiva' }}
               </span>
@@ -126,6 +142,15 @@ const alternarEstado = async (categoria: Categoria) => {
             {{ errorFormulario }}
           </div>
           <form @submit.prevent="guardarCategoria">
+            <div class="mb-4">
+              <label for="tipoCategoria" class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+              <select id="tipoCategoria" v-model="formulario.padre_id" class="w-full border border-gray-300 px-3 py-2 bg-white">
+                <option :value="null">Categoría principal</option>
+                <option v-for="padre in categoriasPrincipales" :key="padre.id" :value="padre.id">
+                  Subcategoría de: {{ padre.nombre }}
+                </option>
+              </select>
+            </div>
             <div class="mb-4">
               <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
               <input

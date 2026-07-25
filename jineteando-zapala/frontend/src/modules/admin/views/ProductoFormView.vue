@@ -38,8 +38,19 @@ const errorFormulario = ref<string | null>(null)
 const previewImagen = ref<string | null>(null)
 const archivoImagen = ref<File | null>(null)
 
+// Computada para mostrar jerarquía en el selector de categorías
+const categoriasConJerarquia = computed(() =>
+  categorias.value.map(cat => {
+    if (cat.padre_id) {
+      const padre = categorias.value.find(c => c.id === cat.padre_id)
+      return { ...cat, nombreMostrado: padre ? `${padre.nombre} → ${cat.nombre}` : cat.nombre }
+    }
+    return { ...cat, nombreMostrado: cat.nombre }
+  })
+)
+
 onMounted(async () => {
-  await cargarCategorias() // sin argumento
+  await cargarCategorias()
   if (esEdicion.value) {
     try {
       const producto = await obtenerProductoPorId(productoId.value)
@@ -84,7 +95,6 @@ const guardarProducto = async () => {
   errores.value = {}
   errorFormulario.value = null
 
-  // Convertir precio_mayorista antes de validar
   const mayoristaInput = formulario.value.precio_mayorista
   const mayoristaParsed = (mayoristaInput === '' || mayoristaInput === null) ? null : Number(mayoristaInput)
 
@@ -172,7 +182,7 @@ const guardarProducto = async () => {
               <label for="categoria" class="block text-sm font-medium mb-1">Categoría</label>
               <select id="categoria" v-model="formulario.categoria_id" class="w-full border border-gray-300 px-3 py-2 bg-white" :disabled="guardando">
                 <option value="" disabled>Seleccionar categoría</option>
-                <option v-for="cat in categorias" :key="cat.id" :value="cat.id">{{ cat.nombre }}</option>
+                <option v-for="cat in categoriasConJerarquia" :key="cat.id" :value="cat.id">{{ cat.nombreMostrado }}</option>
               </select>
               <p v-if="errores.categoria_id" class="text-sm text-red-600 mt-1">{{ errores.categoria_id }}</p>
             </div>

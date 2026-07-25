@@ -6,6 +6,7 @@ export interface Categoria {
   slug: string
   imagen_url: string | null
   activa: boolean
+  padre_id: string | null   // nuevo
   created_at: string
   updated_at: string
 }
@@ -25,16 +26,15 @@ export interface Producto {
   updated_at: string
 }
 
-// Tipo para formularios (datos a enviar)
 export interface CategoriaFormData {
   nombre: string
   activa: boolean
-  // slug se genera en backend, no se envía manualmente
+  padre_id?: string | null   // nuevo, opcional
 }
 
 export interface ProductoFormData {
   nombre: string
-  codigo: string          // puede ser auto-generado o manual
+  codigo: string
   descripcion: string
   precio_minorista: number
   precio_mayorista: number | null

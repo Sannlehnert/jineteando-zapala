@@ -16,6 +16,7 @@ export const categoriaSchema = z.object({
     .min(1, 'El nombre es obligatorio')
     .max(100, 'El nombre no puede superar los 100 caracteres'),
   activa: z.boolean().default(true),
+  padre_id: z.string().uuid().nullable().optional().default(null), // nuevo
 })
 
 export type CategoriaForm = z.infer<typeof categoriaSchema>
