@@ -2,10 +2,15 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../../stores/auth'
+import { useConfiguracionStore } from '../../../stores/configuracion'
 import { loginSchema, type LoginForm } from '../../../domain/schemas'
+import { computed } from 'vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const configStore = useConfiguracionStore()
+const logoUrl = computed(() => configStore.config?.logo_url ?? null)
+const nombreNegocio = computed(() => configStore.config?.nombre || 'Jineteando Zapala')
 
 const form = reactive<LoginForm>({
   email: '',
@@ -41,65 +46,57 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#FDFBF7] px-4">
-    <div class="w-full max-w-md">
-      <h1 class="text-3xl font-bold text-center text-[#2C2A28] mb-8">
-        Jineteando Zapala
-      </h1>
-      <div class="bg-white rounded-none border border-gray-200 p-8">
-        <h2 class="text-xl font-semibold mb-6 text-[#2C2A28]">Iniciar sesión</h2>
+  <div class="min-h-screen flex items-center justify-center bg-fondo px-4">
+    <div class="w-full max-w-sm">
+      <!-- Logo o nombre -->
+      <div class="mb-8 text-center">
+        <img v-if="logoUrl" :src="logoUrl" :alt="nombreNegocio" class="h-12 mx-auto" />
+        <h1 v-else class="font-serif text-3xl font-semibold text-texto">{{ nombreNegocio }}</h1>
+      </div>
 
-        <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 text-sm">
+      <div class="bg-superficie rounded-card shadow-sm p-8">
+        <h2 class="text-xl font-serif text-texto mb-6">Iniciar sesión</h2>
+
+        <!-- Error general -->
+        <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-xl">
           {{ errors.general }}
         </div>
 
         <form @submit.prevent="onSubmit" novalidate>
           <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label for="email" class="block text-sm font-medium text-texto mb-1">Email</label>
             <input
               id="email"
               v-model="form.email"
               type="email"
               autocomplete="email"
               :disabled="isSubmitting"
-              :class="[
-                'w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-transparent transition',
-                errors.email ? 'border-red-400' : ''
-              ]"
+              class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent transition"
+              :class="{ 'border-red-400': errors.email }"
               aria-describedby="email-error"
             />
-            <p v-if="errors.email" id="email-error" class="mt-1 text-sm text-red-600">
-              {{ errors.email }}
-            </p>
+            <p v-if="errors.email" id="email-error" class="mt-1 text-sm text-error">{{ errors.email }}</p>
           </div>
 
           <div class="mb-6">
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">
-              Contraseña
-            </label>
+            <label for="password" class="block text-sm font-medium text-texto mb-1">Contraseña</label>
             <input
               id="password"
               v-model="form.password"
               type="password"
               autocomplete="current-password"
               :disabled="isSubmitting"
-              :class="[
-                'w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-transparent transition',
-                errors.password ? 'border-red-400' : ''
-              ]"
+              class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent transition"
+              :class="{ 'border-red-400': errors.password }"
               aria-describedby="password-error"
             />
-            <p v-if="errors.password" id="password-error" class="mt-1 text-sm text-red-600">
-              {{ errors.password }}
-            </p>
+            <p v-if="errors.password" id="password-error" class="mt-1 text-sm text-error">{{ errors.password }}</p>
           </div>
 
           <button
             type="submit"
             :disabled="isSubmitting"
-            class="w-full bg-amber-800 text-white py-2 px-4 font-medium hover:bg-amber-900 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-amber-700 focus:ring-offset-2 transition"
+            class="w-full bg-primario text-white py-2.5 px-4 rounded-full text-sm font-medium hover:scale-105 transition-transform disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <span v-if="isSubmitting">Ingresando...</span>
             <span v-else>Ingresar</span>

@@ -77,77 +77,79 @@ const enviar = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#FDFBF7] text-[#2C2A28]">
-    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-      <h1 class="text-xl font-semibold">Configuración del negocio</h1>
-      <router-link to="/admin" class="text-sm text-amber-800 hover:underline">Volver al panel</router-link>
+  <div class="min-h-screen bg-fondo text-texto">
+    <header class="bg-superficie shadow-sm px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <h1 class="text-lg font-semibold text-primario truncate max-w-full">Configuración del negocio</h1>
+      <router-link to="/admin" class="text-sm text-primario hover:underline">Volver al panel</router-link>
     </header>
-    <main class="max-w-2xl mx-auto px-6 py-8">
-      <div v-if="cargando" class="text-gray-500">Cargando...</div>
-      <div v-else-if="error" class="text-red-600">{{ error }}</div>
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      <div v-if="cargando" class="text-texto-secundario">Cargando...</div>
+      <div v-else-if="error" class="text-error">{{ error }}</div>
       <form v-else @submit.prevent="enviar" class="space-y-6">
-        <div v-if="exito" class="p-3 bg-green-50 border border-green-300 text-green-800 text-sm">Configuración guardada correctamente.</div>
-        <div v-if="errores.general" class="p-3 bg-red-50 border border-red-200 text-red-800 text-sm">{{ errores.general }}</div>
+        <div v-if="exito" class="p-3 bg-green-50 border border-green-300 text-green-800 text-sm rounded-xl">Configuración guardada correctamente.</div>
+        <div v-if="errores.general" class="p-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-xl">{{ errores.general }}</div>
 
-        <section class="bg-white border border-gray-200 p-6 space-y-4">
+        <section class="bg-superficie rounded-card shadow-sm p-6 space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Nombre del negocio</label>
-            <input v-model="form.nombre" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
-            <p v-if="errores.nombre" class="text-sm text-red-600">{{ errores.nombre }}</p>
+            <label class="block text-sm font-medium text-texto mb-1">Nombre del negocio</label>
+            <input v-model="form.nombre" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
+            <p v-if="errores.nombre" class="text-error text-sm mt-1">{{ errores.nombre }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Descripción corta</label>
-            <textarea v-model="form.descripcion" rows="2" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando"></textarea>
+            <label class="block text-sm font-medium text-texto mb-1">Descripción corta</label>
+            <textarea v-model="form.descripcion" rows="2" class="w-full border border-borde rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando"></textarea>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">WhatsApp (con código de país, ej: +5493413107891)</label>
-            <input v-model="form.whatsapp" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
-            <p v-if="errores.whatsapp" class="text-sm text-red-600">{{ errores.whatsapp }}</p>
+            <label class="block text-sm font-medium text-texto mb-1">WhatsApp (con código de país)</label>
+            <input v-model="form.whatsapp" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
+            <p v-if="errores.whatsapp" class="text-error text-sm mt-1">{{ errores.whatsapp }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Dirección</label>
-            <input v-model="form.direccion" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
-            <p v-if="errores.direccion" class="text-sm text-red-600">{{ errores.direccion }}</p>
+            <label class="block text-sm font-medium text-texto mb-1">Dirección</label>
+            <input v-model="form.direccion" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
+            <p v-if="errores.direccion" class="text-error text-sm mt-1">{{ errores.direccion }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Horarios</label>
-            <input v-model="form.horarios" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
-            <p v-if="errores.horarios" class="text-sm text-red-600">{{ errores.horarios }}</p>
+            <label class="block text-sm font-medium text-texto mb-1">Horarios</label>
+            <input v-model="form.horarios" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
+            <p v-if="errores.horarios" class="text-error text-sm mt-1">{{ errores.horarios }}</p>
           </div>
         </section>
 
-        <section class="bg-white border border-gray-200 p-6 space-y-4">
-          <h2 class="font-medium">Redes sociales</h2>
+        <section class="bg-superficie rounded-card shadow-sm p-6 space-y-4">
+          <h2 class="font-sans text-lg font-medium">Redes sociales</h2>
           <div>
-            <label class="block text-sm font-medium mb-1">Instagram (usuario)</label>
-            <input v-model="form.instagram" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
+            <label class="block text-sm font-medium text-texto mb-1">Instagram (usuario)</label>
+            <input v-model="form.instagram" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">Facebook (usuario o página)</label>
-            <input v-model="form.facebook" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
+            <label class="block text-sm font-medium text-texto mb-1">Facebook (usuario o página)</label>
+            <input v-model="form.facebook" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
           </div>
           <div>
-            <label class="block text-sm font-medium mb-1">TikTok (usuario)</label>
-            <input v-model="form.tiktok" type="text" class="w-full border border-gray-300 px-3 py-2" :disabled="guardando" />
+            <label class="block text-sm font-medium text-texto mb-1">TikTok (usuario)</label>
+            <input v-model="form.tiktok" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
           </div>
         </section>
 
-        <section class="bg-white border border-gray-200 p-6">
-          <h2 class="font-medium mb-4">Logo</h2>
-          <div class="flex items-start gap-4">
-            <div class="w-24 h-24 bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
+        <!-- Logo mejorado en mobile -->
+        <section class="bg-superficie rounded-card shadow-sm p-6">
+          <h2 class="font-sans text-lg font-medium mb-4">Logo</h2>
+          <div class="flex flex-col sm:flex-row items-start gap-4">
+            <div class="w-24 h-24 rounded-2xl bg-secundario/20 flex items-center justify-center overflow-hidden flex-shrink-0">
               <img v-if="previewLogo" :src="previewLogo" class="object-contain w-full h-full" alt="Logo" />
-              <span v-else class="text-gray-400 text-sm">Sin logo</span>
+              <span v-else class="text-texto-secundario text-sm">Sin logo</span>
             </div>
-            <div>
-              <input type="file" accept="image/jpeg,image/png,image/webp" @change="manejarLogo" :disabled="guardando" class="text-sm" />
-              <p v-if="errores.logo" class="text-sm text-red-600 mt-1">{{ errores.logo }}</p>
+            <div class="flex-1 w-full sm:w-auto">
+              <input type="file" accept="image/jpeg,image/png,image/webp" @change="manejarLogo" :disabled="guardando" class="w-full text-sm truncate" />
+              <p v-if="errores.logo" class="text-error text-sm mt-1">{{ errores.logo }}</p>
+              <p class="text-xs text-texto-secundario mt-2">JPEG, PNG o WebP. Máximo 5 MB.</p>
             </div>
           </div>
         </section>
 
         <div class="flex justify-end">
-          <button type="submit" :disabled="guardando" class="bg-amber-800 text-white px-6 py-2 text-sm font-medium hover:bg-amber-900 disabled:opacity-60">
+          <button type="submit" :disabled="guardando" class="bg-primario text-white px-6 py-2.5 rounded-full text-sm font-medium hover:scale-105 transition-transform disabled:opacity-60 shadow-sm w-full sm:w-auto">
             <span v-if="guardando">Guardando...</span>
             <span v-else>Guardar cambios</span>
           </button>

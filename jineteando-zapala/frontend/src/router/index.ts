@@ -99,4 +99,14 @@ router.beforeEach((to, _from, next) => {
   next()
 })
 
+router.afterEach(async (to, from) => {
+  const authStore = useAuthStore()
+  // Si veníamos de una página de admin y ahora vamos a una ruta no admin, cerramos sesión
+  if (from.path.startsWith('/admin') && !to.path.startsWith('/admin')) {
+    if (authStore.user) {
+      await authStore.signOut()
+    }
+  }
+})
+
 export default router

@@ -7,95 +7,78 @@ import type { Producto } from '../../../domain/types'
 const { productos, cargando, error, cargarProductos, cambiarEstado } = useProductosAdmin()
 const router = useRouter()
 
-onMounted(() => {
-  cargarProductos()
-})
-
-const irANuevo = () => {
-  router.push('/admin/productos/nuevo')
-}
-
-const irAEditar = (id: string) => {
-  router.push(`/admin/productos/${id}/editar`)
-}
-
+onMounted(() => cargarProductos())
+const irANuevo = () => router.push('/admin/productos/nuevo')
+const irAEditar = (id: string) => router.push(`/admin/productos/${id}/editar`)
 const alternarEstado = async (prod: Producto) => {
-  try {
-    await cambiarEstado(prod.id, !prod.activo)
-  } catch (e: any) {
-    error.value = e.message
-  }
+  try { await cambiarEstado(prod.id, !prod.activo) } catch (e: any) { error.value = e.message }
 }
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#FDFBF7] text-[#2C2A28]">
-    <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-semibold">Productos</h1>
-      <router-link to="/admin" class="text-sm text-amber-800 hover:underline">Volver al panel</router-link>
+  <div class="min-h-screen bg-fondo text-texto">
+    <header class="bg-superficie shadow-sm px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <h1 class="text-lg font-semibold text-primario">Productos</h1>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <button @click="irANuevo" class="bg-primario text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform w-full sm:w-auto text-center">Nuevo</button>
+        <router-link to="/admin" class="text-sm text-primario hover:underline self-center">Panel</router-link>
+      </div>
     </header>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div v-if="cargando" class="text-texto-secundario">Cargando...</div>
+      <div v-else-if="error" class="text-error">{{ error }}</div>
+      <div v-else class="bg-superficie rounded-card shadow-sm overflow-hidden">
+        <!-- Vista de tabla en desktop -->
+        <div class="hidden sm:block">
+          <table class="w-full text-sm">
+            <thead class="bg-secundario/10 border-b border-borde">
+              <tr>
+                <th class="p-4 text-left font-medium">Producto</th>
+                <th class="p-4 text-left font-medium">Código</th>
+                <th class="p-4 text-left font-medium">Categoría</th>
+                <th class="p-4 text-left font-medium">Precio</th>
+                <th class="p-4 text-left font-medium">Estado</th>
+                <th class="p-4 text-left font-medium">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="prod in productos" :key="prod.id" class="border-b border-borde/50 hover:bg-fondo/50 transition-colors">
+                <td class="p-4 font-medium">{{ prod.nombre }}</td>
+                <td class="p-4 font-mono text-xs">{{ prod.codigo }}</td>
+                <td class="p-4">{{ (prod as any).categoria?.nombre || '—' }}</td>
+                <td class="p-4">${{ prod.precio_minorista.toLocaleString() }}</td>
+                <td class="p-4">
+                  <span :class="prod.activo ? 'text-exito' : 'text-error'" class="text-xs font-medium">{{ prod.activo ? 'Activo' : 'Inactivo' }}</span>
+                </td>
+                <td class="p-4 flex gap-2">
+                  <button @click="irAEditar(prod.id)" class="text-primario hover:underline text-xs">Editar</button>
+                  <button @click="alternarEstado(prod)" class="text-texto-secundario hover:underline text-xs">{{ prod.activo ? 'Desactivar' : 'Activar' }}</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-    <main class="max-w-5xl mx-auto px-6 py-8">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-medium">Listado de productos</h2>
-        <button @click="irANuevo" class="bg-amber-800 text-white px-4 py-2 text-sm font-medium hover:bg-amber-900 transition">
-          Agregar producto
-        </button>
-      </div>
+        <!-- Vista de tarjetas en mobile -->
+        <div class="sm:hidden divide-y divide-borde">
+          <div v-for="prod in productos" :key="prod.id" class="p-4 space-y-2">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-medium">{{ prod.nombre }}</p>
+                <p class="text-xs text-texto-secundario font-mono">{{ prod.codigo }}</p>
+              </div>
+              <span :class="prod.activo ? 'text-exito' : 'text-error'" class="text-xs font-medium px-2 py-0.5 rounded-full bg-opacity-10">{{ prod.activo ? 'Activo' : 'Inactivo' }}</span>
+            </div>
+            <p class="text-sm">{{ (prod as any).categoria?.nombre || '—' }}</p>
+            <p class="text-sm font-medium">${{ prod.precio_minorista.toLocaleString() }}</p>
+            <div class="flex gap-3 pt-1">
+              <button @click="irAEditar(prod.id)" class="text-primario hover:underline text-xs">Editar</button>
+              <button @click="alternarEstado(prod)" class="text-texto-secundario hover:underline text-xs">{{ prod.activo ? 'Desactivar' : 'Activar' }}</button>
+            </div>
+          </div>
+        </div>
 
-      <div v-if="error" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 text-sm">
-        {{ error }}
-      </div>
-
-      <div v-if="cargando" class="text-gray-500">Cargando...</div>
-
-      <div v-else class="bg-white border border-gray-200 overflow-x-auto">
-        <table v-if="productos.length > 0" class="w-full text-sm">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="p-3 text-left">Imagen</th>
-              <th class="p-3 text-left">Nombre</th>
-              <th class="p-3 text-left">Código</th>
-              <th class="p-3 text-left">Categoría</th>
-              <th class="p-3 text-left">Precio Min.</th>
-              <th class="p-3 text-left">Estado</th>
-              <th class="p-3 text-left">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="prod in productos"
-              :key="prod.id"
-              class="border-b border-gray-100"
-            >
-              <td class="p-3">
-                <img
-                  v-if="prod.imagen_principal_url"
-                  :src="prod.imagen_principal_url"
-                  class="w-10 h-10 object-cover"
-                  alt=""
-                />
-                <span v-else class="text-gray-400 text-xs">Sin imagen</span>
-              </td>
-              <td class="p-3 font-medium">{{ prod.nombre }}</td>
-              <td class="p-3">{{ prod.codigo }}</td>
-              <td class="p-3">{{ (prod as any).categoria?.nombre || '—' }}</td>
-              <td class="p-3">${{ prod.precio_minorista }}</td>
-              <td class="p-3">
-                <span :class="prod.activo ? 'text-green-700' : 'text-red-600'">
-                  {{ prod.activo ? 'Activo' : 'Inactivo' }}
-                </span>
-              </td>
-              <td class="p-3 space-x-2">
-                <button @click="irAEditar(prod.id)" class="text-amber-800 hover:underline">Editar</button>
-                <button @click="alternarEstado(prod)" class="text-gray-600 hover:underline">
-                  {{ prod.activo ? 'Desactivar' : 'Activar' }}
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-else class="p-6 text-gray-500 text-center">No hay productos todavía.</div>
+        <div v-if="productos.length === 0" class="p-6 text-center text-texto-secundario">No hay productos.</div>
       </div>
     </main>
   </div>
