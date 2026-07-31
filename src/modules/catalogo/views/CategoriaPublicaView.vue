@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import { useCategoriaPublica } from '../composables/useCategoriaPublica'
 import NavegacionPublica from '../components/NavegacionPublica.vue'
 import FooterPublico from '../components/FooterPublico.vue'
@@ -13,6 +14,28 @@ const headOptions = computed(() => ({
   description: `Productos en la categoría ${categoria.value?.nombre || ''}. Descubrí la mejor selección de Jineteando Zapala.`,
 }))
 useHead(headOptions)
+
+const insertarBreadcrumb = () => {
+  if (!categoria.value) return
+  const items = [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${window.location.origin}/` },
+    { '@type': 'ListItem', position: 2, name: 'Catálogo', item: `${window.location.origin}/catalogo` },
+    { '@type': 'ListItem', position: 3, name: categoria.value.nombre, item: window.location.href },
+  ]
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items,
+  }
+  const script = document.createElement('script')
+  script.type = 'application/ld+json'
+  script.textContent = JSON.stringify(schema)
+  document.head.appendChild(script)
+}
+
+watch(categoria, (cat) => {
+  if (cat) insertarBreadcrumb()
+})
 </script>
 
 <template>

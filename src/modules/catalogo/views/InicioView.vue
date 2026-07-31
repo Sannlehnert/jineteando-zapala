@@ -13,27 +13,53 @@ import type { Producto } from '../../../domain/types'
 import { generarUrlWhatsApp, generarUrlGoogleMaps } from '../../../shared/utils/whatsapp'
 
 const { categorias, cargando, error } = useCatalogo()
-const config = useConfiguracionStore().config
+const configStore = useConfiguracionStore()
+const config = computed(() => configStore.config)
 const whatsappLink = computed(() =>
-  generarUrlWhatsApp('Hola, quisiera información.', config?.whatsapp)
+  generarUrlWhatsApp('Hola, quisiera información.', config.value?.whatsapp)
 )
 
 const productosDestacados = ref<Producto[]>([])
 const cargandoDestacados = ref(false)
 
 const headOptions = computed(() => ({
-  title: config?.nombre || 'Jineteando Zapala',
-  description: config?.descripcion || 'Productos regionales y de campo desde Zapala, Neuquén.',
+  title: config.value?.nombre || 'Jineteando Zapala',
+  description: config.value?.descripcion || 'Productos regionales y de campo desde Zapala, Neuquén.',
 }))
 useHead(headOptions)
+
+const insertarSchemaWebSite = () => {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: config.value?.nombre || 'Jineteando Zapala',
+    url: window.location.origin,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${window.location.origin}/buscar?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  }
+  const script = document.createElement('script')
+  script.type = 'application/ld+json'
+  script.textContent = JSON.stringify(schema)
+  document.head.appendChild(script)
+}
 
 onMounted(async () => {
   cargandoDestacados.value = true
   try {
     const todos = await obtenerProductos(false)
     productosDestacados.value = todos.slice(0, 6)
-  } catch (e) { /* vacío */ }
-  finally { cargandoDestacados.value = false }
+  } catch (e) {
+    console.error('Error al cargar destacados', e)
+  } finally {
+    cargandoDestacados.value = false
+  }
+  insertarSchemaWebSite()
 })
 </script>
 
