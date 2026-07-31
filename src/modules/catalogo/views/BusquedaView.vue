@@ -40,8 +40,11 @@ useHead(headOptions)
         <div v-for="n in 3" :key="n" class="skeleton h-64 rounded-card" />
       </div>
       <div v-else-if="error" class="text-error text-center py-12">{{ error }}</div>
-      <div v-else-if="resultados.length === 0" class="text-center py-20 bg-superficie rounded-card shadow-sm text-texto-secundario">
-        No se encontraron productos.
+      <div v-else-if="resultados.length === 0 && (termino || categoriaId || precioMin !== undefined || precioMax !== undefined)" class="text-center py-20 bg-superficie rounded-card shadow-sm text-texto-secundario">
+        No se encontraron productos con esos criterios.
+      </div>
+      <div v-else-if="resultados.length === 0 && !termino && !categoriaId && precioMin === undefined && precioMax === undefined" class="text-center py-20 bg-superficie rounded-card shadow-sm text-texto-secundario">
+        Empezá escribiendo el nombre de un producto o elegí una categoría.
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <TarjetaProducto v-for="prod in resultados" :key="prod.id" :producto="prod" />
