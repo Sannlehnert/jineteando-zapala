@@ -38,6 +38,7 @@ async function onSubmit() {
     await authStore.signIn(form.email, form.password)
     router.push('/admin')
   } catch (err: any) {
+    console.error('Error de inicio de sesión:', err)
     errors.general = 'El email o la contraseña no son correctos.'
   } finally {
     isSubmitting.value = false
@@ -48,7 +49,6 @@ async function onSubmit() {
 <template>
   <div class="min-h-screen flex items-center justify-center bg-fondo px-4">
     <div class="w-full max-w-sm">
-      <!-- Logo o nombre -->
       <div class="mb-8 text-center">
         <img v-if="logoUrl" :src="logoUrl" :alt="nombreNegocio" class="h-12 mx-auto" />
         <h1 v-else class="font-serif text-3xl font-semibold text-texto">{{ nombreNegocio }}</h1>
@@ -57,9 +57,9 @@ async function onSubmit() {
       <div class="bg-superficie rounded-card shadow-sm p-8">
         <h2 class="text-xl font-serif text-texto mb-6">Iniciar sesión</h2>
 
-        <!-- Error general -->
         <div v-if="errors.general" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 text-sm rounded-xl">
           {{ errors.general }}
+          <button @click="onSubmit" class="ml-2 underline text-error hover:text-red-700">Reintentar</button>
         </div>
 
         <form @submit.prevent="onSubmit" novalidate>

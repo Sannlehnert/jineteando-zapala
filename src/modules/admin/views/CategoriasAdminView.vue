@@ -17,6 +17,11 @@ const categoriasPrincipales = computed(() =>
   categorias.value.filter(c => c.padre_id === null && c.id !== editandoId.value)
 )
 
+const tieneSubcategorias = computed(() => {
+  if (!editandoId.value) return false
+  return categorias.value.some(c => c.padre_id === editandoId.value)
+})
+
 onMounted(() => cargarCategorias())
 
 const abrirFormularioCrear = () => {
@@ -29,7 +34,11 @@ const abrirFormularioCrear = () => {
 
 const abrirFormularioEditar = (categoria: Categoria) => {
   editandoId.value = categoria.id
-  formulario.value = { nombre: categoria.nombre, activa: categoria.activa, padre_id: categoria.padre_id }
+  formulario.value = {
+    nombre: categoria.nombre,
+    activa: categoria.activa,
+    padre_id: categoria.padre_id,
+  }
   erroresValidacion.value = {}
   errorFormulario.value = null
   mostrarFormulario.value = true
@@ -98,10 +107,17 @@ const alternarEstado = async (categoria: Categoria) => {
           <form @submit.prevent="guardarCategoria" class="space-y-4">
             <div>
               <label class="block text-sm font-medium mb-1">Tipo</label>
-              <select v-model="formulario.padre_id" class="w-full border border-borde rounded-full px-3 py-2 text-sm bg-fondo">
+              <select
+                v-model="formulario.padre_id"
+                :disabled="!!editandoId && tieneSubcategorias"
+                class="w-full border border-borde rounded-full px-3 py-2 text-sm bg-fondo"
+              >
                 <option :value="null">Principal</option>
                 <option v-for="padre in categoriasPrincipales" :key="padre.id" :value="padre.id">Subcategoría de {{ padre.nombre }}</option>
               </select>
+              <p v-if="editandoId && tieneSubcategorias" class="text-xs text-amber-700 mt-1">
+                No se puede cambiar el tipo porque esta categoría tiene subcategorías.
+              </p>
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Nombre</label>

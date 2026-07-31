@@ -2,7 +2,7 @@ import { clienteSupabase } from './supabase'
 
 const BUCKET_NAME = 'productos'
 const MIME_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp']
-const TAMANO_MAXIMO = 5 * 1024 * 1024 // 5 MB
+const TAMANO_MAXIMO = 5 * 1024 * 1024
 
 export function validarImagen(file: File): string | null {
   if (!MIME_PERMITIDOS.includes(file.type)) {
@@ -22,7 +22,10 @@ export async function subirImagenProducto(file: File, ruta?: string): Promise<st
       cacheControl: '3600',
       upsert: false,
     })
-  if (error) throw new Error(`Error al subir imagen: ${error.message}`)
+  if (error) {
+    console.error('subirImagenProducto:', error)
+    throw new Error(`Error al subir imagen: ${error.message}`)
+  }
 
   const { data: urlData } = clienteSupabase.storage
     .from(BUCKET_NAME)

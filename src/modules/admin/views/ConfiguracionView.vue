@@ -100,8 +100,8 @@ const enviar = async () => {
             <textarea v-model="form.descripcion" rows="2" class="w-full border border-borde rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando"></textarea>
           </div>
           <div>
-            <label class="block text-sm font-medium text-texto mb-1">WhatsApp (con código de país)</label>
-            <input v-model="form.whatsapp" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" />
+            <label class="block text-sm font-medium text-texto mb-1">WhatsApp (formato internacional: +5493413107891)</label>
+            <input v-model="form.whatsapp" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" :disabled="guardando" placeholder="+5493413107891" />
             <p v-if="errores.whatsapp" class="text-error text-sm mt-1">{{ errores.whatsapp }}</p>
           </div>
           <div>
@@ -121,22 +121,24 @@ const enviar = async () => {
           <div>
             <label class="block text-sm font-medium text-texto mb-1">Instagram</label>
             <input v-model="form.instagram" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" placeholder="https://www.instagram.com/..." :disabled="guardando" />
+            <p v-if="errores.instagram" class="text-error text-sm mt-1">{{ errores.instagram }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-texto mb-1">Facebook</label>
             <input v-model="form.facebook" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" placeholder="https://www.facebook.com/..." :disabled="guardando" />
+            <p v-if="errores.facebook" class="text-error text-sm mt-1">{{ errores.facebook }}</p>
           </div>
           <div>
             <label class="block text-sm font-medium text-texto mb-1">TikTok</label>
             <input v-model="form.tiktok" type="text" class="w-full border border-borde rounded-full px-4 py-2.5 text-sm focus:ring-2 focus:ring-primario focus:border-transparent" placeholder="https://www.tiktok.com/..." :disabled="guardando" />
+            <p v-if="errores.tiktok" class="text-error text-sm mt-1">{{ errores.tiktok }}</p>
           </div>
         </section>
 
-        <!-- Logo mejorado en mobile -->
         <section class="bg-superficie rounded-card shadow-sm p-6">
           <h2 class="font-sans text-lg font-medium mb-4">Logo</h2>
           <div class="flex flex-col sm:flex-row items-start gap-4">
-            <div class="w-24 h-24 rounded-2xl bg-secundario/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <div class="w-24 h-24 rounded-2xl bg-secundario/20 flex items-center justify-center overflow-hidden shrink-0">
               <img v-if="previewLogo" :src="previewLogo" class="object-contain w-full h-full" alt="Logo" />
               <span v-else class="text-texto-secundario text-sm">Sin logo</span>
             </div>

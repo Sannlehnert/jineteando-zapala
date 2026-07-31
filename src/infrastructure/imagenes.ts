@@ -8,23 +8,30 @@ export async function obtenerImagenesProducto(productoId: string) {
     .select('*')
     .eq('producto_id', productoId)
     .order('orden', { ascending: true })
-  if (error) throw new Error(`Error al obtener imágenes: ${error.message}`)
+  if (error) {
+    console.error('obtenerImagenesProducto:', error)
+    throw new Error(`Error al obtener imágenes: ${error.message}`)
+  }
   return data as ImagenProducto[]
 }
 
 export async function eliminarImagen(id: string, pathStorage: string) {
-  // Eliminar de Storage
   const { error: storageError } = await clienteSupabase.storage
     .from('productos')
     .remove([pathStorage])
-  if (storageError) throw new Error(`Error al eliminar archivo: ${storageError.message}`)
+  if (storageError) {
+    console.error('eliminarImagen storage:', storageError)
+    throw new Error(`Error al eliminar archivo: ${storageError.message}`)
+  }
 
-  // Eliminar registro
   const { error } = await clienteSupabase
     .from('imagenes_producto')
     .delete()
     .eq('id', id)
-  if (error) throw new Error(`Error al eliminar imagen: ${error.message}`)
+  if (error) {
+    console.error('eliminarImagen db:', error)
+    throw new Error(`Error al eliminar imagen: ${error.message}`)
+  }
 }
 
 export async function reordenarImagenes(idsOrdenadas: string[]) {
@@ -35,7 +42,10 @@ export async function reordenarImagenes(idsOrdenadas: string[]) {
   const { error } = await clienteSupabase
     .from('imagenes_producto')
     .upsert(updates, { onConflict: 'id' })
-  if (error) throw new Error(`Error al reordenar imágenes: ${error.message}`)
+  if (error) {
+    console.error('reordenarImagenes:', error)
+    throw new Error(`Error al reordenar imágenes: ${error.message}`)
+  }
 }
 
 export async function guardarImagenesProducto(
@@ -64,6 +74,9 @@ export async function guardarImagenesProducto(
 
   if (inserts.length > 0) {
     const { error } = await clienteSupabase.from('imagenes_producto').insert(inserts)
-    if (error) throw new Error(`Error al guardar imágenes: ${error.message}`)
+    if (error) {
+      console.error('guardarImagenesProducto:', error)
+      throw new Error(`Error al guardar imágenes: ${error.message}`)
+    }
   }
 }

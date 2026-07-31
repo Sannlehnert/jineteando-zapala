@@ -25,6 +25,9 @@ export async function buscarProductos(
   }
 
   const { data, error } = await query.order('nombre')
-  if (error) throw new Error(`Error en la búsqueda: ${error.message}`)
+  if (error) {
+    console.error('buscarProductos:', error)
+    throw new Error(`Error en la búsqueda: ${error.message}`)
+  }
   return data as Producto[]
 }

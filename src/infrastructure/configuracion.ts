@@ -7,7 +7,10 @@ export async function obtenerConfiguracion(): Promise<Configuracion> {
     .select('*')
     .eq('id', 1)
     .single()
-  if (error) throw new Error(`Error al cargar configuración: ${error.message}`)
+  if (error) {
+    console.error('obtenerConfiguracion:', error)
+    throw new Error(`Error al cargar configuración: ${error.message}`)
+  }
   return data as Configuracion
 }
 
@@ -23,6 +26,9 @@ export async function actualizarConfiguracion(
     .eq('id', 1)
     .select()
     .single()
-  if (error) throw new Error(`Error al guardar configuración: ${error.message}`)
+  if (error) {
+    console.error('actualizarConfiguracion:', error)
+    throw new Error(`Error al guardar configuración: ${error.message}`)
+  }
   return updated as Configuracion
 }

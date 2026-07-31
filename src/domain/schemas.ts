@@ -58,12 +58,33 @@ export type AtributosForm = z.infer<typeof atributosSchema>
 export const configuracionSchema = z.object({
   nombre: z.string().min(1, 'El nombre es obligatorio'),
   descripcion: z.string().optional().default(''),
-  whatsapp: z.string().min(1, 'El WhatsApp es obligatorio'),
+  whatsapp: z
+    .string()
+    .min(1, 'El WhatsApp es obligatorio')
+    .regex(/^\+\d{7,15}$/, 'Formato inválido. Ej: +5493413107891'),
   direccion: z.string().min(1, 'La dirección es obligatoria'),
   horarios: z.string().min(1, 'Los horarios son obligatorios'),
-  instagram: z.string().optional().default(''),
-  facebook: z.string().optional().default(''),
-  tiktok: z.string().optional().default(''),
+  instagram: z
+    .string()
+    .optional()
+    .default('')
+    .refine((val) => !val || val.startsWith('https://') || val.startsWith('http://'), {
+      message: 'Debe ser una URL completa (https://...)',
+    }),
+  facebook: z
+    .string()
+    .optional()
+    .default('')
+    .refine((val) => !val || val.startsWith('https://') || val.startsWith('http://'), {
+      message: 'Debe ser una URL completa (https://...)',
+    }),
+  tiktok: z
+    .string()
+    .optional()
+    .default('')
+    .refine((val) => !val || val.startsWith('https://') || val.startsWith('http://'), {
+      message: 'Debe ser una URL completa (https://...)',
+    }),
 })
 
 export type ConfiguracionForm = z.infer<typeof configuracionSchema>

@@ -26,14 +26,12 @@ const atributos = computed<AtributosProducto | null>(() => {
   return { talles: a.talles, colores: a.colores, materiales: a.materiales }
 })
 
-// SEO dinámico
 const headOptions = computed(() => ({
   title: producto.value?.nombre,
   description: producto.value?.descripcion || `Descubrí ${producto.value?.nombre} en Jineteando Zapala.`,
 }))
 useHead(headOptions)
 
-// Datos estructurados de producto (insertados mediante JS)
 onMounted(() => {
   if (!producto.value) return
   const schema = {
@@ -83,17 +81,22 @@ const compartirProducto = async () => {
         <div class="skeleton h-96 w-full rounded-card" />
         <div class="skeleton h-8 w-2/3" />
       </div>
-      <div v-else-if="error" class="text-center py-20 text-error">{{ error }}</div>
+      <div v-else-if="error" class="text-center py-20 text-error">
+        <p class="text-lg">{{ error }}</p>
+        <button @click="$router.go(0)" class="mt-4 bg-primario text-white px-6 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform">
+          Reintentar
+        </button>
+      </div>
       <template v-else-if="producto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <div class="rounded-card overflow-hidden bg-secundario/20 aspect-[4/3] flex items-center justify-center">
+            <div class="rounded-card overflow-hidden bg-secundario/20 aspect-4/3 flex items-center justify-center">
               <img v-if="imagenSeleccionada" :src="imagenSeleccionada" :alt="producto.nombre" class="w-full h-full object-contain" loading="lazy" decoding="async" />
               <span v-else class="text-texto-secundario/40 text-6xl font-serif">Sin imagen</span>
             </div>
             <div v-if="imagenes.length > 1" class="flex gap-3 mt-4 overflow-x-auto">
               <button v-for="img in imagenes" :key="img.id" @click="imagenSeleccionada = img.url"
-                class="flex-shrink-0 w-20 h-20 rounded-2xl border-2 overflow-hidden"
+                class="shrink-0 w-20 h-20 rounded-2xl border-2 overflow-hidden"
                 :class="img.url === imagenSeleccionada ? 'border-primario' : 'border-borde'">
                 <img :src="img.url" class="w-full h-full object-cover" loading="lazy" decoding="async" />
               </button>

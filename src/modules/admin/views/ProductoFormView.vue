@@ -33,14 +33,14 @@ const formulario = ref<ProductoFormLocal>({
   codigo: '',
 })
 
-const atributos = ref<AtributosForm>({
-  talles: [],
-  colores: [],
-  materiales: [],
-})
+const atributos = ref<AtributosForm>({ talles: [], colores: [], materiales: [] })
 const activarTalles = ref(false)
 const activarColores = ref(false)
 const activarMateriales = ref(false)
+
+const nuevoTalle = ref('')
+const nuevoColor = ref('')
+const nuevoMaterial = ref('')
 
 const archivosNuevos = ref<File[]>([])
 const previewsNuevos = ref<string[]>([])
@@ -48,6 +48,7 @@ const previewsNuevos = ref<string[]>([])
 const errores = ref<Record<string, string>>({})
 const guardando = ref(false)
 const errorFormulario = ref<string | null>(null)
+const subiendoImagenes = ref(false)
 
 const { imagenes, eliminar: eliminarImagenExistente, reordenar } = useImagenesProducto(
   () => productoId.value || null
@@ -145,12 +146,19 @@ const moverImagen = async (index: number, direccion: 'arriba' | 'abajo') => {
   await reordenar(ids)
 }
 
-const agregarValor = (tipo: 'talles' | 'colores' | 'materiales') => {
-  const valor = prompt(`Agregar ${tipo.slice(0, -1)}:`)
-  if (valor && valor.trim()) {
-    atributos.value[tipo]!.push(valor.trim())
+const agregarValorInline = (tipo: 'talles' | 'colores' | 'materiales') => {
+  if (tipo === 'talles' && nuevoTalle.value.trim()) {
+    atributos.value.talles!.push(nuevoTalle.value.trim())
+    nuevoTalle.value = ''
+  } else if (tipo === 'colores' && nuevoColor.value.trim()) {
+    atributos.value.colores!.push(nuevoColor.value.trim())
+    nuevoColor.value = ''
+  } else if (tipo === 'materiales' && nuevoMaterial.value.trim()) {
+    atributos.value.materiales!.push(nuevoMaterial.value.trim())
+    nuevoMaterial.value = ''
   }
 }
+
 const quitarValor = (tipo: 'talles' | 'colores' | 'materiales', index: number) => {
   atributos.value[tipo]!.splice(index, 1)
 }
@@ -208,7 +216,9 @@ const guardarProducto = async () => {
     }
 
     if (archivosNuevos.value.length > 0 && productoCreadoId) {
+      subiendoImagenes.value = true
       await guardarImagenesProducto(productoCreadoId, archivosNuevos.value, [])
+      subiendoImagenes.value = false
       const { obtenerImagenesProducto } = await import('../../../infrastructure/imagenes')
       const imagenesRecienGuardadas = await obtenerImagenesProducto(productoCreadoId)
       if (imagenesRecienGuardadas.length > 0) {
@@ -246,7 +256,6 @@ const guardarProducto = async () => {
       </div>
 
       <form v-else @submit.prevent="guardarProducto" class="space-y-8">
-        <!-- Información básica -->
         <section class="bg-superficie rounded-card shadow-sm p-6">
           <h2 class="font-sans text-lg font-medium mb-4">Información básica</h2>
           <div class="grid grid-cols-1 gap-4">
@@ -262,7 +271,6 @@ const guardarProducto = async () => {
           </div>
         </section>
 
-        <!-- Categoría y Precios -->
         <section class="bg-superficie rounded-card shadow-sm p-6">
           <h2 class="font-sans text-lg font-medium mb-4">Categoría y precios</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -287,7 +295,6 @@ const guardarProducto = async () => {
           </div>
         </section>
 
-        <!-- Imágenes -->
         <section class="bg-superficie rounded-card shadow-sm p-6">
           <h2 class="font-sans text-lg font-medium mb-4">Imágenes</h2>
           <div v-if="imagenes.length" class="grid grid-cols-3 sm:grid-cols-4 gap-4 mb-4">
@@ -308,10 +315,10 @@ const guardarProducto = async () => {
             </div>
           </div>
           <input type="file" accept="image/jpeg,image/png,image/webp" multiple @change="seleccionarImagenes" :disabled="guardando" class="text-sm" />
+          <p v-if="subiendoImagenes" class="text-sm text-primario mt-2">Subiendo imágenes...</p>
           <p v-if="errores.imagenes" class="text-error text-sm mt-1">{{ errores.imagenes }}</p>
         </section>
 
-        <!-- Atributos -->
         <section class="bg-superficie rounded-card shadow-sm p-6">
           <h2 class="font-sans text-lg font-medium mb-4">Atributos</h2>
           <div class="space-y-4">
@@ -320,12 +327,17 @@ const guardarProducto = async () => {
                 <input type="checkbox" v-model="activarTalles" :disabled="guardando" class="rounded border-borde text-primario focus:ring-primario" />
                 <span class="text-sm font-medium">Talles</span>
               </label>
-              <div v-if="activarTalles" class="mt-2 flex flex-wrap gap-2">
-                <span v-for="(talle, idx) in atributos.talles" :key="idx" class="bg-secundario/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                  {{ talle }}
-                  <button type="button" @click="quitarValor('talles', idx)" class="text-error ml-1">&times;</button>
-                </span>
-                <button type="button" @click="agregarValor('talles')" class="text-sm text-primario hover:underline">+ Agregar talle</button>
+              <div v-if="activarTalles" class="mt-2">
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span v-for="(talle, idx) in atributos.talles" :key="idx" class="bg-secundario/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                    {{ talle }}
+                    <button type="button" @click="quitarValor('talles', idx)" class="text-error ml-1">&times;</button>
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <input v-model="nuevoTalle" type="text" placeholder="Nuevo talle" class="border border-borde rounded-full px-3 py-1 text-sm flex-1" @keyup.enter="agregarValorInline('talles')" />
+                  <button type="button" @click="agregarValorInline('talles')" class="text-sm text-primario hover:underline">Agregar</button>
+                </div>
               </div>
             </div>
             <div>
@@ -333,12 +345,17 @@ const guardarProducto = async () => {
                 <input type="checkbox" v-model="activarColores" :disabled="guardando" class="rounded border-borde text-primario focus:ring-primario" />
                 <span class="text-sm font-medium">Colores</span>
               </label>
-              <div v-if="activarColores" class="mt-2 flex flex-wrap gap-2">
-                <span v-for="(color, idx) in atributos.colores" :key="idx" class="bg-secundario/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                  {{ color }}
-                  <button type="button" @click="quitarValor('colores', idx)" class="text-error ml-1">&times;</button>
-                </span>
-                <button type="button" @click="agregarValor('colores')" class="text-sm text-primario hover:underline">+ Agregar color</button>
+              <div v-if="activarColores" class="mt-2">
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span v-for="(color, idx) in atributos.colores" :key="idx" class="bg-secundario/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                    {{ color }}
+                    <button type="button" @click="quitarValor('colores', idx)" class="text-error ml-1">&times;</button>
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <input v-model="nuevoColor" type="text" placeholder="Nuevo color" class="border border-borde rounded-full px-3 py-1 text-sm flex-1" @keyup.enter="agregarValorInline('colores')" />
+                  <button type="button" @click="agregarValorInline('colores')" class="text-sm text-primario hover:underline">Agregar</button>
+                </div>
               </div>
             </div>
             <div>
@@ -346,19 +363,23 @@ const guardarProducto = async () => {
                 <input type="checkbox" v-model="activarMateriales" :disabled="guardando" class="rounded border-borde text-primario focus:ring-primario" />
                 <span class="text-sm font-medium">Materiales</span>
               </label>
-              <div v-if="activarMateriales" class="mt-2 flex flex-wrap gap-2">
-                <span v-for="(material, idx) in atributos.materiales" :key="idx" class="bg-secundario/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                  {{ material }}
-                  <button type="button" @click="quitarValor('materiales', idx)" class="text-error ml-1">&times;</button>
-                </span>
-                <button type="button" @click="agregarValor('materiales')" class="text-sm text-primario hover:underline">+ Agregar material</button>
+              <div v-if="activarMateriales" class="mt-2">
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span v-for="(material, idx) in atributos.materiales" :key="idx" class="bg-secundario/20 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                    {{ material }}
+                    <button type="button" @click="quitarValor('materiales', idx)" class="text-error ml-1">&times;</button>
+                  </span>
+                </div>
+                <div class="flex gap-2">
+                  <input v-model="nuevoMaterial" type="text" placeholder="Nuevo material" class="border border-borde rounded-full px-3 py-1 text-sm flex-1" @keyup.enter="agregarValorInline('materiales')" />
+                  <button type="button" @click="agregarValorInline('materiales')" class="text-sm text-primario hover:underline">Agregar</button>
+                </div>
               </div>
             </div>
             <p v-if="errores.atributos" class="text-error text-sm mt-1">{{ errores.atributos }}</p>
           </div>
         </section>
 
-        <!-- Publicación -->
         <section class="bg-superficie rounded-card shadow-sm p-6">
           <h2 class="font-sans text-lg font-medium mb-4">Publicación</h2>
           <label class="flex items-center space-x-2">
@@ -370,7 +391,7 @@ const guardarProducto = async () => {
         <div class="flex justify-end space-x-3">
           <router-link to="/admin/productos" class="px-5 py-2.5 border border-borde rounded-full text-sm hover:bg-fondo transition-colors">Cancelar</router-link>
           <button type="submit" :disabled="guardando" class="bg-primario text-white px-6 py-2.5 rounded-full text-sm font-medium hover:scale-105 transition-transform disabled:opacity-60 shadow-sm">
-            <span v-if="guardando">Guardando...</span>
+            <span v-if="guardando || subiendoImagenes">Guardando...</span>
             <span v-else>Guardar producto</span>
           </button>
         </div>
