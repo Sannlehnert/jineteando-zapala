@@ -87,6 +87,7 @@ const router = createRouter({
   routes: rutas,
 })
 
+// Guardia de autenticación y redirección
 router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
 
@@ -105,12 +106,20 @@ router.beforeEach((to, _from, next) => {
   next()
 })
 
+// Comportamiento después de cada navegación
 router.afterEach(async (to, from) => {
   const authStore = useAuthStore()
+
+  // Cerrar sesión automáticamente al salir del panel
   if (from.path.startsWith('/admin') && !to.path.startsWith('/admin')) {
     if (authStore.user) {
       await authStore.signOut()
     }
+  }
+
+  // Scroll hacia arriba en todas las rutas públicas
+  if (!to.path.startsWith('/admin')) {
+    window.scrollTo(0, 0)
   }
 })
 
