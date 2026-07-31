@@ -14,9 +14,9 @@ defineProps<{
 <template>
   <router-link
     :to="`/producto/${producto.slug}`"
-    class="group bg-superficie rounded-card shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden flex flex-col"
+    class="group bg-superficie rounded-card shadow-card hover:shadow-hover transition-all duration-200 transform hover:-translate-y-0.5 overflow-hidden flex flex-col"
   >
-    <div class="aspect-[4/3] bg-secundario/20 overflow-hidden">
+    <div class="aspect-4/3 bg-secundario/20 overflow-hidden">
       <img
         v-if="producto.imagen_principal_url"
         :src="producto.imagen_principal_url"
@@ -30,7 +30,7 @@ defineProps<{
     <div class="p-5 flex flex-col justify-between flex-1">
       <h3 class="font-medium text-texto group-hover:text-primario transition-colors">{{ producto.nombre }}</h3>
       <div class="mt-2">
-        <p class="text-xl font-serif text-primario">${{ producto.precio_minorista.toLocaleString() }}</p>
+        <p class="text-xl font-price text-primario">${{ producto.precio_minorista.toLocaleString() }}</p>
         <p v-if="producto.precio_mayorista" class="text-sm text-texto-secundario mt-1">
           Mayorista ${{ producto.precio_mayorista.toLocaleString() }}
         </p>

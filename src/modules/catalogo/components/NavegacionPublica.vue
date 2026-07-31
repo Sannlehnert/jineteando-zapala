@@ -3,8 +3,6 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useConfiguracionStore } from '../../../stores/configuracion'
 
 const configStore = useConfiguracionStore()
-
-// Propiedades reactivas para reaccionar a la carga asíncrona de la configuración
 const logoUrl = computed(() => configStore.config?.logo_url ?? null)
 const whatsappUrl = computed(() => {
   const numero = configStore.config?.whatsapp || '5493413107891'
@@ -25,18 +23,16 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 <template>
   <nav
     :class="[
-      'fixed top-0 inset-x-0 z-50 transition-all duration-500',
+      'fixed top-0 inset-x-0 z-50 transition-colors duration-500',
       scrolled ? 'bg-white/80 backdrop-blur-xl shadow-sm border-b border-borde' : 'bg-transparent'
     ]"
   >
     <div class="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-      <!-- Logo / nombre fijo -->
       <router-link to="/" class="flex items-center gap-2 shrink-0">
         <img v-if="logoUrl" :src="logoUrl" alt="Jineteando Zapala" class="h-8 w-auto" />
         <span v-else class="font-serif text-2xl text-texto font-semibold tracking-tight">Jineteando Zapala</span>
       </router-link>
 
-      <!-- Desktop links -->
       <div class="hidden md:flex items-center gap-8 text-sm font-medium">
         <router-link to="/" class="text-texto hover:text-primario transition-colors">Inicio</router-link>
         <router-link to="/catalogo" class="text-texto hover:text-primario transition-colors">Catálogo</router-link>
@@ -51,7 +47,6 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
         </a>
       </div>
 
-      <!-- Mobile hamburger button -->
       <button
         @click="menuAbierto = !menuAbierto"
         class="md:hidden p-2 rounded-full hover:bg-borde/50 transition-colors"
@@ -66,7 +61,6 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
       </button>
     </div>
 
-    <!-- Mobile menu -->
     <div
       v-if="menuAbierto"
       class="md:hidden bg-superficie/95 backdrop-blur-md border-t border-borde px-6 py-4 animate-fade-in"

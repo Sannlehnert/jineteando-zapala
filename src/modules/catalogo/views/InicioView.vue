@@ -45,7 +45,7 @@ onMounted(async () => {
     <header class="relative pt-32 pb-24 md:pt-48 md:pb-36 px-6 max-w-7xl mx-auto">
       <div class="max-w-2xl">
         <p class="text-xs tracking-[0.2em] uppercase text-texto-secundario mb-4">Desde Zapala, Neuquén</p>
-        <h1 class="font-serif text-5xl md:text-7xl font-semibold leading-[1.1] text-texto mb-6">
+        <h1 class="font-serif text-4xl md:text-6xl font-semibold leading-[1.1] text-texto mb-6">
           {{ config?.nombre || 'Jineteando Zapala' }}
         </h1>
         <p class="text-lg text-texto-secundario leading-relaxed mb-10 max-w-xl">
@@ -84,7 +84,7 @@ onMounted(async () => {
       <div v-if="cargandoDestacados" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         <div v-for="n in 3" :key="n" class="skeleton h-80 rounded-card" />
       </div>
-      <div v-else-if="productosDestacados.length === 0" class="text-center py-20 text-texto-secundario bg-superficie rounded-card shadow-sm">
+      <div v-else-if="productosDestacados.length === 0" class="text-center py-20 text-texto-secundario bg-superficie rounded-card shadow-card">
         No hay productos publicados aún.
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

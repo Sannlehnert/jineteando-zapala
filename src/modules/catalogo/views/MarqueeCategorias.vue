@@ -29,7 +29,7 @@ const items = computed(() => [...props.categorias, ...props.categorias])
         v-for="(cat, idx) in items"
         :key="`${cat.id}-${idx}`"
         :to="`/catalogo/${cat.slug}`"
-        class="shrink-0 w-40 sm:w-52 bg-superficie rounded-card shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+        class="shrink-0 w-40 sm:w-52 bg-superficie rounded-card shadow-card hover:shadow-hover transition-all duration-200 transform hover:-translate-y-0.5 overflow-hidden"
       >
         <div class="h-24 sm:h-28 bg-secundario/20 flex items-center justify-center">
           <img v-if="cat.imagen_url" :src="cat.imagen_url" :alt="cat.nombre" class="w-full h-full object-cover" />
