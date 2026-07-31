@@ -41,7 +41,7 @@ onMounted(() => {
   <footer class="bg-texto text-fondo mt-20 py-20">
     <div class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-3 gap-10">
       <div>
-        <img v-if="config?.logo_url" :src="config.logo_url" alt="Jineteando Zapala" class="h-8 w-auto mb-4 opacity-90" />
+        <img v-if="config?.logo_url" :src="config.logo_url" alt="Jineteando Zapala" class="h-8 w-auto mb-4 opacity-90" loading="lazy" decoding="async" />
         <h3 v-else class="font-serif text-2xl text-white mb-4">{{ config?.nombre || 'Jineteando Zapala' }}</h3>
         <p class="text-fondo/60 text-sm leading-relaxed">{{ config?.descripcion }}</p>
       </div>

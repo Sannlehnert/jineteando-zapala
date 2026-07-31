@@ -26,7 +26,7 @@ useHead({ title: 'Catálogo', description: 'Explorá todas nuestras categorías 
           class="bg-superficie rounded-card shadow-sm hover:shadow-md transition-all p-6 flex flex-col items-center text-center"
         >
           <div class="w-16 h-16 rounded-full bg-secundario/20 flex items-center justify-center mb-3 overflow-hidden">
-            <img v-if="cat.imagen_url" :src="cat.imagen_url" :alt="cat.nombre" class="w-full h-full object-cover" />
+            <img v-if="cat.imagen_url" :src="cat.imagen_url" :alt="cat.nombre" class="w-full h-full object-cover" loading="lazy" decoding="async" />
             <span v-else class="font-serif text-2xl text-primario/60">{{ cat.nombre.charAt(0) }}</span>
           </div>
           <span class="font-medium text-sm">{{ cat.nombre }}</span>

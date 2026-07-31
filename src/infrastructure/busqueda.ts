@@ -24,7 +24,7 @@ export async function buscarProductos(
     query = query.lte('precio_minorista', filtros.precioMax)
   }
 
-  const { data, error } = await query.order('nombre')
+  const { data, error } = await query.order('nombre').limit(50)
   if (error) {
     console.error('buscarProductos:', error)
     throw new Error(`Error en la búsqueda: ${error.message}`)

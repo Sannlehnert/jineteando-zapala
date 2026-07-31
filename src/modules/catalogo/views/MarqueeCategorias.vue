@@ -32,7 +32,7 @@ const items = computed(() => [...props.categorias, ...props.categorias])
         class="shrink-0 w-40 sm:w-52 bg-superficie rounded-card shadow-card hover:shadow-hover transition-all duration-200 transform hover:-translate-y-0.5 overflow-hidden"
       >
         <div class="h-24 sm:h-28 bg-secundario/20 flex items-center justify-center">
-          <img v-if="cat.imagen_url" :src="cat.imagen_url" :alt="cat.nombre" class="w-full h-full object-cover" />
+          <img v-if="cat.imagen_url" :src="cat.imagen_url" :alt="cat.nombre" class="w-full h-full object-cover" loading="lazy" decoding="async" />
           <span v-else class="font-serif text-2xl sm:text-3xl text-primario/50">{{ cat.nombre.charAt(0) }}</span>
         </div>
         <div class="p-3 text-center">
