@@ -29,7 +29,14 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
   >
     <div class="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
       <router-link to="/" class="flex items-center gap-2 shrink-0">
-        <img v-if="logoUrl" :src="logoUrl" alt="Jineteando Zapala" class="h-8 w-auto" decoding="async" />
+        <img
+          v-if="logoUrl"
+          :src="logoUrl"
+          alt="Jineteando Zapala"
+          class="h-8 w-auto"
+          decoding="async"
+          fetchpriority="high"
+        />
         <span v-else class="font-serif text-2xl text-texto font-semibold tracking-tight">Jineteando Zapala</span>
       </router-link>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
 import type { Categoria } from '../../../domain/types'
 
 const props = defineProps<{
@@ -9,6 +9,27 @@ const props = defineProps<{
 }>()
 
 const items = computed(() => [...props.categorias, ...props.categorias])
+
+// Detener la animación cuando la pestaña no está visible
+const visibilidad = ref(true)
+const manejarVisibilidad = () => {
+  visibilidad.value = document.visibilityState === 'visible'
+  const el = document.querySelector('.marquee-track') as HTMLElement | null
+  if (el) {
+    if (visibilidad.value) {
+      el.classList.remove('pause-animation')
+    } else {
+      el.classList.add('pause-animation')
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('visibilitychange', manejarVisibilidad)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('visibilitychange', manejarVisibilidad)
+})
 </script>
 
 <template>
@@ -19,7 +40,7 @@ const items = computed(() => [...props.categorias, ...props.categorias])
     <div v-else-if="error" class="text-center text-error px-6">{{ error }}</div>
     <div
       v-else
-      class="flex gap-4 animate-marquee-mobile sm:animate-marquee hover:pause-animation touch-pause"
+      class="flex gap-4 marquee-track animate-marquee-mobile sm:animate-marquee hover:pause-animation touch-pause"
       @mouseenter="(e) => (e.currentTarget as HTMLElement).classList.add('pause-animation')"
       @mouseleave="(e) => (e.currentTarget as HTMLElement).classList.remove('pause-animation')"
       @touchstart="(e) => (e.currentTarget as HTMLElement).classList.add('pause-animation')"
@@ -45,10 +66,10 @@ const items = computed(() => [...props.categorias, ...props.categorias])
 
 <style scoped>
 .animate-marquee {
-  animation: marquee 120s linear infinite;
+  animation: marquee 80s linear infinite;
 }
 .animate-marquee-mobile {
-  animation: marquee 20s linear infinite;
+  animation: marquee 200s linear infinite;
 }
 @keyframes marquee {
   0% { transform: translateX(0); }
